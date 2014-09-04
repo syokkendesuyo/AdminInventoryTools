@@ -3,12 +3,12 @@ version: 1.0.0
 main: net.jp.minecraft.plugin.Main
 permissions:
     ait.open:
-        description: AdminInventoryTools!
+        description: Allow open Admin GUI.
         default: op
     ait.give:
-        description: AdminInventoryTools!
+        description: Give a Admin GUI stick.
         default: op
 commands:
     ait:
-        description: AdminInventoryTools!
-        usage: AdminInventoryTools!
+        description: Provides a Admin GUI for administrators.
+        usage: You don't have a permisson (ait.give)

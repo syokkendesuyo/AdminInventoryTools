@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,20 +41,20 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(this, this);
 	}
 
-	@EventHandler
-	public boolean onCommand(CommandSender sender, Command cmd, String Label, String [] args){
+	public boolean onCommand(CommandSender sender, Command cmd){
 		Player player = (Player) sender;
 
 		if (cmd.getName().equalsIgnoreCase("ait")){
 			if ((sender instanceof Player) || (sender instanceof ConsoleCommandSender)){
 				if(player.hasPermission("ait.give")){
 
-					ItemStack item0 = new ItemStack(Material.STICK);
-					ItemMeta itemmeta0 = item0.getItemMeta();
-					itemmeta0.setDisplayName(ChatColor.GOLD + "AdminInventoryTools");
-					itemmeta0.setLore(Arrays.asList(ChatColor.YELLOW + "魔法の杖:", ChatColor.WHITE + "この杖を空気に向かってクリックすると", ChatColor.WHITE + "スバラシイ画面が現れるだろう。"));
-					item0.setItemMeta(itemmeta0);
-					player.getInventory().addItem(item0);
+					ItemStack item = new ItemStack(Material.STICK);
+					ItemMeta itemmeta = item.getItemMeta();
+					itemmeta.setDisplayName(ChatColor.GOLD + "AdminInventoryTools");
+					itemmeta.setLore(Arrays.asList(ChatColor.YELLOW + "魔法の杖:", ChatColor.WHITE + "この杖を空気に向かってクリックすると", ChatColor.WHITE + "スバラシイ画面が現れるだろう。"));
+					itemmeta.addEnchant(Enchantment.SILK_TOUCH , 1, true);
+					item.setItemMeta(itemmeta);
+					player.getInventory().addItem(item);
 
 
 					player.sendMessage(ChatColor.AQUA + "[情報]AdminInventoryToolsを与えました。");
@@ -69,7 +70,10 @@ public class Main extends JavaPlugin implements Listener {
 	public void onPlayerInteractEvent(PlayerInteractEvent event){
 		final Player p = event.getPlayer();
 		if(p.hasPermission("ait.open")){
-			if(p.getItemInHand().getItemMeta().getDisplayName()==null){
+			if(p.getItemInHand().getType()==Material.AIR){
+				//何でもなかった場合無視
+			}
+			else if(p.getItemInHand().getItemMeta().getDisplayName()==null){
 				//通常の棒だった場合無視する
 			}
 			else if(p.getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "AdminInventoryTools")){
@@ -83,7 +87,6 @@ public class Main extends JavaPlugin implements Listener {
 						itemmeta0.setDisplayName(ChatColor.GOLD  + "時間を早朝にする");
 						itemmeta0.setLore(Arrays.asList(ChatColor.YELLOW + "コマンド:", ChatColor.WHITE + "/time set 0と同様です。"));
 						item0.setItemMeta(itemmeta0);
-
 
 						//インベントリGUI2つ目の設定
 						ItemStack item1 = new ItemStack(Material.TORCH);
