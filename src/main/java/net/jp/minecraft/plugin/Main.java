@@ -69,7 +69,10 @@ public class Main extends JavaPlugin implements Listener {
 	public void onPlayerInteractEvent(PlayerInteractEvent event){
 		final Player p = event.getPlayer();
 		if(p.hasPermission("ait.open")){
-			if(p.getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "AdminInventoryTools")){
+			if(p.getItemInHand().getItemMeta().getDisplayName()==null){
+				//通常の棒だった場合無視する
+			}
+			else if(p.getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "AdminInventoryTools")){
 				if(event.getAction() == Action.LEFT_CLICK_AIR){
 					if(p.getItemInHand().getType() == Material.STICK){
 						//ここの内容はインベントリGUIのアイテム設定です
