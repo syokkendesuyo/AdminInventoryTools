@@ -1,0 +1,14 @@
+name: AdminInventoryTools
+version: 1.0.0
+main: net.jp.minecraft.plugin.Main
+permissions:
+    ait.open:
+        description: AdminInventoryTools!
+        default: op
+    ait.give:
+        description: AdminInventoryTools!
+        default: op
+commands:
+    ait:
+        description: AdminInventoryTools!
+        usage: AdminInventoryTools!
