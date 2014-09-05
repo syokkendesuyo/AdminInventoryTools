@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,25 +40,26 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(this, this);
 	}
 
-	public boolean onCommand(CommandSender sender, Command cmd){
+	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
 		Player player = (Player) sender;
 
-		if (cmd.getName().equalsIgnoreCase("ait")){
-			if ((sender instanceof Player) || (sender instanceof ConsoleCommandSender)){
-				if(player.hasPermission("ait.give")){
+		//player.sendMessage("46");
+		if(player.hasPermission("ait.give")||player.isOp()){
+			//player.sendMessage("48");
+			if (cmd.getName().equalsIgnoreCase("ait")){
+				//player.sendMessage("50");
 
-					ItemStack item = new ItemStack(Material.STICK);
-					ItemMeta itemmeta = item.getItemMeta();
-					itemmeta.setDisplayName(ChatColor.GOLD + "AdminInventoryTools");
-					itemmeta.setLore(Arrays.asList(ChatColor.YELLOW + "魔法の杖:", ChatColor.WHITE + "この杖を空気に向かってクリックすると", ChatColor.WHITE + "スバラシイ画面が現れるだろう。"));
-					itemmeta.addEnchant(Enchantment.SILK_TOUCH , 1, true);
-					item.setItemMeta(itemmeta);
-					player.getInventory().addItem(item);
+				ItemStack item = new ItemStack(Material.STICK);
+				ItemMeta itemmeta = item.getItemMeta();
+				itemmeta.setDisplayName(ChatColor.GOLD + "AdminInventoryTools");
+				itemmeta.setLore(Arrays.asList(ChatColor.YELLOW + "魔法の杖:", ChatColor.WHITE + "この杖を空気に向かってクリックすると", ChatColor.WHITE + "スバラシイ画面が現れるだろう。"));
+				itemmeta.addEnchant(Enchantment.SILK_TOUCH , 1, true);
+				item.setItemMeta(itemmeta);
+				player.getInventory().addItem(item);
 
+				player.sendMessage(ChatColor.AQUA + "[情報]AdminInventoryToolsを与えました。");
 
-					player.sendMessage(ChatColor.AQUA + "[情報]AdminInventoryToolsを与えました。");
-					return true;
-				}
+				return true;
 			}
 		}
 		return false;
@@ -69,7 +69,7 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerInteractEvent(PlayerInteractEvent event){
 		final Player p = event.getPlayer();
-		if(p.hasPermission("ait.open")){
+		if(p.hasPermission("ait.open")||p.isOp()){
 			if(p.getItemInHand().getType()==Material.AIR){
 				//何でもなかった場合無視
 			}

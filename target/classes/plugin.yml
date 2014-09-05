@@ -1,6 +1,12 @@
 name: AdminInventoryTools
 version: 1.0.0
 main: net.jp.minecraft.plugin.Main
+commands:
+    ait:
+        description: Provides a Admin GUI for administrators.
+        usage: /ait
+        permission: ait.give
+        permission-message: You don't have permission (ait.give)
 permissions:
     ait.open:
         description: Allow open Admin GUI.
@@ -8,7 +14,3 @@ permissions:
     ait.give:
         description: Give a Admin GUI stick.
         default: op
-commands:
-    ait:
-        description: Provides a Admin GUI for administrators.
-        usage: You don't have a permisson (ait.give)
