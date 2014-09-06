@@ -40,27 +40,33 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(this, this);
 	}
 
-	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
-		Player player = (Player) sender;
 
-		//player.sendMessage("46");
-		if(player.hasPermission("ait.give")||player.isOp()){
-			//player.sendMessage("48");
-			if (cmd.getName().equalsIgnoreCase("ait")){
-				//player.sendMessage("50");
 
-				ItemStack item = new ItemStack(Material.STICK);
-				ItemMeta itemmeta = item.getItemMeta();
-				itemmeta.setDisplayName(ChatColor.GOLD + "AdminInventoryTools");
-				itemmeta.setLore(Arrays.asList(ChatColor.YELLOW + "魔法の杖:", ChatColor.WHITE + "この杖を空気に向かってクリックすると", ChatColor.WHITE + "スバラシイ画面が現れるだろう。"));
-				itemmeta.addEnchant(Enchantment.SILK_TOUCH , 1, true);
-				item.setItemMeta(itemmeta);
-				player.getInventory().addItem(item);
-
-				player.sendMessage(ChatColor.AQUA + "[情報]AdminInventoryToolsを与えました。");
-
-				return true;
+	//コマンドで杖を渡す処理
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (cmd.getName().equalsIgnoreCase("ait")) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage("Please excute this /ait command on a game!");
+				sender.sendMessage("/ait コマンドはゲーム内で実行してください。");
 			}
+			else {
+				Player player = (Player) sender;
+				if(player.hasPermission("ait.give")||player.isOp()){
+					//palyerがait.giveまたはopであれば杖を渡す
+
+					ItemStack item = new ItemStack(Material.STICK);
+					ItemMeta itemmeta = item.getItemMeta();
+					itemmeta.setDisplayName(ChatColor.GOLD + "AdminInventoryTools");
+					itemmeta.setLore(Arrays.asList(ChatColor.YELLOW + "魔法の杖:", ChatColor.WHITE + "この杖を空気に向かってクリックすると", ChatColor.WHITE + "スバラシイ画面が現れるだろう。"));
+					itemmeta.addEnchant(Enchantment.SILK_TOUCH , 1, true);
+					item.setItemMeta(itemmeta);
+					player.getInventory().addItem(item);
+
+					player.sendMessage(ChatColor.AQUA + "[情報]AdminInventoryToolsを与えました。");
+				}
+			}
+			return true;
 		}
 		return false;
 	}
