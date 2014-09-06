@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -155,7 +156,7 @@ public class Main extends JavaPlugin implements Listener {
 			if (event.getRawSlot() < 54 && event.getRawSlot() > -1){
 				Player player = (Player) event.getWhoClicked();
 				World world = player.getWorld();
-				if(event.isRightClick() || event.isLeftClick()){
+				if(event.isRightClick() || event.isLeftClick()|| event.getAction()==InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD){
 					if(event.getRawSlot()==0){
 						world.setTime(0);
 						player.sendMessage(ChatColor.AQUA + "[情報]時間を0に設定しました。");
