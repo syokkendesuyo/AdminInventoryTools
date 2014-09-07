@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -41,8 +42,6 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(this, this);
 	}
 
-
-
 	//コマンドで杖を渡す処理
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -53,8 +52,8 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			else {
 				Player player = (Player) sender;
-				if(player.hasPermission("ait.give")||player.isOp()){
-					//palyerがait.giveまたはopであれば杖を渡す
+				if(player.hasPermission("skull.command")||player.isOp()){
+					//palyerがskull.commandまたはopであれば杖を渡す
 
 					ItemStack item = new ItemStack(Material.STICK);
 					ItemMeta itemmeta = item.getItemMeta();
@@ -65,6 +64,36 @@ public class Main extends JavaPlugin implements Listener {
 					player.getInventory().addItem(item);
 
 					player.sendMessage(ChatColor.AQUA + "[情報]AdminInventoryToolsを与えました。");
+				}
+			}
+			return true;
+		}
+
+		else if (cmd.getName().equalsIgnoreCase("skull")) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage("Please excute this /skull command on a game!");
+				sender.sendMessage("/skull コマンドはゲーム内で実行してください。");
+			}
+			else {
+				Player player = (Player) sender;
+				if(player.hasPermission("skull.give")||player.isOp()){
+					//palyerがskull.giveまたはopであればここを抜ける
+					if(args.length == 0){
+						sender.sendMessage(ChatColor.AQUA + "[情報]/skull <player> でプレイヤーの頭を取得できます。");
+					}
+					else{
+					 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1);
+					 SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+					 skull.setDurability((short) 3);
+					 skullMeta.setDisplayName(ChatColor.GOLD + args[0] + "の頭");
+					 skullMeta.setOwner(args[0]);
+					 skull.setItemMeta(skullMeta);
+
+					 skull.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
+					 player.getInventory().addItem(skull);
+
+					player.sendMessage(ChatColor.AQUA + "[情報]"+ args[0] + "の頭を与えました。");
+					}
 				}
 			}
 			return true;
@@ -113,15 +142,22 @@ public class Main extends JavaPlugin implements Listener {
 						ItemStack item3 = new ItemStack(Material.COBBLE_WALL);
 						ItemMeta itemmeta3 = item3.getItemMeta();
 						itemmeta3.setDisplayName(ChatColor.GOLD  + "ホワイトリスト変更");
-						itemmeta3.setLore(Arrays.asList(ChatColor.YELLOW + "ホワイトリストをトグルします。", ChatColor.WHITE + "コマンド:", ChatColor.WHITE + "/whitelist on・offと同様です"));
+						itemmeta3.setLore(Arrays.asList(ChatColor.YELLOW + "ホワイトリストをトグルします。", ChatColor.WHITE + "コマンド:", ChatColor.WHITE + "/whitelist on・offと同様です。"));
 						item3.setItemMeta(itemmeta3);
 
 						//インベントリGUI5つ目の設定
-						ItemStack item4 = new ItemStack(Material.APPLE);
+						ItemStack item4 = new ItemStack(Material.SKULL_ITEM);
 						ItemMeta itemmeta4 = item4.getItemMeta();
-						itemmeta4.setDisplayName(ChatColor.GOLD  + "オペレータ権限変更");
-						itemmeta4.setLore(Arrays.asList(ChatColor.YELLOW + "オペレータ権限をトグルします。", ChatColor.WHITE + "ait.openのパーミッションを保有していない場合", ChatColor.WHITE + "この画面を再度開けなくなります。"));
+						itemmeta4.setDisplayName(ChatColor.GOLD  + "自分の頭を取得");
+						itemmeta4.setLore(Arrays.asList(ChatColor.YELLOW + "MobHeadを自分の頭にして取得。"));
 						item4.setItemMeta(itemmeta4);
+
+						//インベントリGUI6つ目の設定
+						ItemStack item5 = new ItemStack(Material.APPLE);
+						ItemMeta itemmeta5 = item5.getItemMeta();
+						itemmeta5.setDisplayName(ChatColor.GOLD  + "オペレータ権限変更");
+						itemmeta5.setLore(Arrays.asList(ChatColor.YELLOW + "オペレータ権限をトグルします。", ChatColor.WHITE + "ait.openのパーミッションを保有していない場合", ChatColor.WHITE + "この画面を再度開けなくなります。"));
+						item5.setItemMeta(itemmeta5);
 
 						//インベントリを閉じるだけの操作
 						ItemStack close = new ItemStack(Material.STICK);
@@ -156,7 +192,8 @@ public class Main extends JavaPlugin implements Listener {
 			if (event.getRawSlot() < 54 && event.getRawSlot() > -1){
 				Player player = (Player) event.getWhoClicked();
 				World world = player.getWorld();
-				if(event.isRightClick() || event.isLeftClick()|| event.getAction()==InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD){
+				if(event.isRightClick() || event.isLeftClick()|| event.getAction()==InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || event.getAction() == InventoryAction.DROP_ONE_SLOT ||event.getAction() == InventoryAction.DROP_ALL_SLOT){
+					StackTraceElement[] ste = (new Throwable()).getStackTrace();
 					if(event.getRawSlot()==0){
 						world.setTime(0);
 						player.sendMessage(ChatColor.AQUA + "[情報]時間を0に設定しました。");
@@ -192,16 +229,30 @@ public class Main extends JavaPlugin implements Listener {
 							player.sendMessage(ChatColor.AQUA + "[情報]ホワイトリストを無効化しました。");
 						}
 						else if(Bukkit.hasWhitelist()==false){
-							player.sendMessage(ChatColor.AQUA + "[情報]ホワイトリストを有効化しました。");
 							Bukkit.setWhitelist(true);
+							player.sendMessage(ChatColor.AQUA + "[情報]ホワイトリストを有効化しました。");
 						}
 						else{
-							player.sendMessage(ChatColor.AQUA + "[情報]不明なエラーが発生しました。メインクラス:155");
+							player.sendMessage(ChatColor.AQUA + "[情報]不明なエラーが発生しました。メインクラス:" + ste[0].getLineNumber());
 						}
 						player.closeInventory();
 					}
-
 					if(event.getRawSlot()==4){
+
+						 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1);
+						 SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+						 skull.setDurability((short) 3);
+						 skullMeta.setDisplayName(ChatColor.GOLD + player.getName() + "の頭");
+						 skullMeta.setOwner(player.getName());
+						 skull.setItemMeta(skullMeta);
+
+						 skull.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
+						 player.getInventory().addItem(skull);
+
+						player.closeInventory();
+					}
+
+					if(event.getRawSlot()==5){
 						if(player.isOp()==true){
 							player.sendMessage(ChatColor.AQUA + "[情報]オペレータ権限を剥奪しました。");
 							player.setOp(false);

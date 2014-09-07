@@ -7,6 +7,11 @@ commands:
         usage: /ait
         permission: ait.give
         permission-message: You don't have permission (ait.give)
+    skull:
+        description: Get a player skull.
+        usage: /skull <player>
+        permission: skull.give
+        permission-message: You don't have permission (skull.give)
 permissions:
     ait.open:
         description: Allow open Admin GUI.
@@ -14,3 +19,7 @@ permissions:
     ait.give:
         description: Give a Admin GUI stick.
         default: op
+    skull.give:
+        description: Get a player Skull.
+        default: op
+
