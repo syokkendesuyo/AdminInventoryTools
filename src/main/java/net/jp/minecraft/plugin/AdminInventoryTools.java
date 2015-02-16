@@ -5,11 +5,8 @@ import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -108,7 +105,6 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerInteractEvent(PlayerInteractEvent event){
 		final Player p = event.getPlayer();
-		Block block = event.getClickedBlock();
 		if(p.hasPermission("ait.open")||p.isOp()){
 			if(p.getItemInHand().getType()==Material.AIR){
 				//何でもなかった場合無視
@@ -184,28 +180,8 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 					}
 				}
 			}
-			else if(block.getType().equals(Material.SIGN_POST )|| block.getType().equals(Material.SIGN)){
-
-			Sign sign = (Sign) block.getState();
-			String[] lines = sign.getLines();
-			Player player = event.getPlayer();
-			World world = event.getPlayer().getWorld();
-
-			player.sendMessage("[情報]看板クリックしたよ！");
-			if(lines[0].equalsIgnoreCase("*Teleport*")){
-				if(!lines[2].isEmpty()){
-					String[] lineThreeEx = lines[2].split(",");
-					Location location = new Location(world, Double.parseDouble(lineThreeEx[0]), Double.parseDouble(lineThreeEx[1]), Double.parseDouble(lineThreeEx[2]));
-					player.teleport(location);
-				}
-			}
 		}
-		}
-
 	}
-
-
-
 
 	@EventHandler
 	public void inventoryclick(InventoryClickEvent event){
@@ -214,75 +190,83 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 				Player player = (Player) event.getWhoClicked();
 				World world = player.getWorld();
 				if(event.isRightClick() || event.isLeftClick()|| event.getAction()==InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || event.getAction() == InventoryAction.DROP_ONE_SLOT ||event.getAction() == InventoryAction.DROP_ALL_SLOT){
-					StackTraceElement[] ste = (new Throwable()).getStackTrace();
 					if(event.getRawSlot()==0){
-						world.setTime(0);
-						player.sendMessage(ChatColor.AQUA + "[情報]時間を0に設定しました。");
-						player.closeInventory();
+						if(player.hasPermission("ait.gui.timeset.morning")){
+							world.setTime(0);
+							player.sendMessage(ChatColor.AQUA + "[情報]時間を0に設定しました。");
+							player.closeInventory();
+						}
 					}
 
 					if(event.getRawSlot()==1){
-						world.setTime(12500);
-						player.sendMessage(ChatColor.AQUA + "[情報]時間を12500に設定しました。");
-						player.closeInventory();
+						if(player.hasPermission("ait.gui.timeset.night")){
+							world.setTime(12500);
+							player.sendMessage(ChatColor.AQUA + "[情報]時間を12500に設定しました。");
+							player.closeInventory();
+						}
 					}
 
 					if(event.getRawSlot()==2){
-						if(player.getGameMode() == GameMode.SURVIVAL){
-							player.setGameMode(GameMode.CREATIVE);
-							player.sendMessage(ChatColor.AQUA + "[情報]ゲームモードをクリエイティブにしました。");
+						if(player.hasPermission("ait.gui.gamemode")){
+							if(player.getGameMode() == GameMode.SURVIVAL){
+								player.setGameMode(GameMode.CREATIVE);
+								player.sendMessage(ChatColor.AQUA + "[情報]ゲームモードをクリエイティブにしました。");
+							}
+							else if(player.getGameMode() == GameMode.CREATIVE){
+								player.setGameMode(GameMode.SURVIVAL);
+								player.sendMessage(ChatColor.AQUA + "[情報]ゲームモードをサバイバルにしました。");
+							}
+							//サバイバル・クリエイティブでないゲームモードはあまり使わないよね？ってことで他はとりあえずサバイバルに設定
+							else{
+								player.setGameMode(GameMode.SURVIVAL);
+								player.sendMessage(ChatColor.AQUA + "[情報]ゲームモードをサバイバルにしました。");
+							}
+							player.closeInventory();
 						}
-						else if(player.getGameMode() == GameMode.CREATIVE){
-							player.setGameMode(GameMode.SURVIVAL);
-							player.sendMessage(ChatColor.AQUA + "[情報]ゲームモードをサバイバルにしました。");
-						}
-						//サバイバル・クリエイティブでないゲームモードはあまり使わないよね？ってことで他はとりあえずサバイバルに設定
-						else{
-							player.setGameMode(GameMode.SURVIVAL);
-							player.sendMessage(ChatColor.AQUA + "[情報]ゲームモードをサバイバルにしました。");
-						}
-						player.closeInventory();
 					}
 
 					if(event.getRawSlot()==3){
-						if(Bukkit.hasWhitelist()==true){
-							Bukkit.setWhitelist(false);
-							player.sendMessage(ChatColor.AQUA + "[情報]ホワイトリストを無効化しました。");
+						if(player.hasPermission("ait.gui.whitelist")){
+							if(Bukkit.hasWhitelist()==true){
+								Bukkit.setWhitelist(false);
+								player.sendMessage(ChatColor.AQUA + "[情報]ホワイトリストを無効化しました。");
+							}
+							else if(Bukkit.hasWhitelist()==false){
+								Bukkit.setWhitelist(true);
+								player.sendMessage(ChatColor.AQUA + "[情報]ホワイトリストを有効化しました。");
+							}
+							player.closeInventory();
 						}
-						else if(Bukkit.hasWhitelist()==false){
-							Bukkit.setWhitelist(true);
-							player.sendMessage(ChatColor.AQUA + "[情報]ホワイトリストを有効化しました。");
-						}
-						else{
-							player.sendMessage(ChatColor.AQUA + "[情報]不明なエラーが発生しました。メインクラス:" + ste[0].getLineNumber());
-						}
-						player.closeInventory();
 					}
+
 					if(event.getRawSlot()==4){
+						if(player.hasPermission("ait.gui.skull")){
+							 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1);
+							 SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+							 skull.setDurability((short) 3);
+							 skullMeta.setDisplayName(ChatColor.GOLD + player.getName() + "の頭");
+							 skullMeta.setOwner(player.getName());
+							 skull.setItemMeta(skullMeta);
 
-						 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1);
-						 SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
-						 skull.setDurability((short) 3);
-						 skullMeta.setDisplayName(ChatColor.GOLD + player.getName() + "の頭");
-						 skullMeta.setOwner(player.getName());
-						 skull.setItemMeta(skullMeta);
+							 skull.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
+							 player.getInventory().addItem(skull);
 
-						 skull.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
-						 player.getInventory().addItem(skull);
-
-						player.closeInventory();
+							 player.closeInventory();
+						}
 					}
 
 					if(event.getRawSlot()==5){
-						if(player.isOp()==true){
-							player.sendMessage(ChatColor.AQUA + "[情報]オペレータ権限を剥奪しました。");
-							player.setOp(false);
+						if(player.hasPermission("ait.gui.op")){
+							if(player.isOp()==true){
+								player.sendMessage(ChatColor.AQUA + "[情報]オペレータ権限を剥奪しました。");
+								player.setOp(false);
+							}
+							else if(player.isOp()==false){
+								player.sendMessage(ChatColor.AQUA + "[情報]オペレータ権限を取得しました。");
+								player.setOp(true);
+							}
+							player.closeInventory();
 						}
-						else if(player.isOp()==false){
-							player.sendMessage(ChatColor.AQUA + "[情報]オペレータ権限を取得しました。");
-							player.setOp(true);
-						}
-						player.closeInventory();
 					}
 
 					if(event.getRawSlot()==8){

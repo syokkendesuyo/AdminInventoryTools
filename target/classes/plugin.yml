@@ -22,4 +22,7 @@ permissions:
     skull.give:
         description: Get a player Skull.
         default: op
+    ait.gui:
+        description: Allow use GUI icon.
+        default: op
 
