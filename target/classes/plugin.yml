@@ -1,6 +1,6 @@
 name: AdminInventoryTools
-version: 1.0.1
-main: net.jp.minecraft.plugin.Main
+version: 1.0.2
+main: net.jp.minecraft.plugin.AdminInventoryTools
 commands:
     ait:
         description: Provides a Admin GUI for administrators.

@@ -5,8 +5,11 @@ import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -30,7 +33,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 
 
-public class Main extends JavaPlugin implements Listener {
+public class AdminInventoryTools extends JavaPlugin implements Listener {
 
 
 	/**
@@ -52,8 +55,8 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			else {
 				Player player = (Player) sender;
-				if(player.hasPermission("skull.command")||player.isOp()){
-					//palyerがskull.commandまたはopであれば杖を渡す
+				if(player.hasPermission("ait.give")||player.isOp()){
+					//palyerがait.giveまたはopであれば杖を渡す
 
 					ItemStack item = new ItemStack(Material.STICK);
 					ItemMeta itemmeta = item.getItemMeta();
@@ -105,6 +108,7 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerInteractEvent(PlayerInteractEvent event){
 		final Player p = event.getPlayer();
+		Block block = event.getClickedBlock();
 		if(p.hasPermission("ait.open")||p.isOp()){
 			if(p.getItemInHand().getType()==Material.AIR){
 				//何でもなかった場合無視
@@ -180,7 +184,24 @@ public class Main extends JavaPlugin implements Listener {
 					}
 				}
 			}
+			else if(block.getType().equals(Material.SIGN_POST )|| block.getType().equals(Material.SIGN)){
+
+			Sign sign = (Sign) block.getState();
+			String[] lines = sign.getLines();
+			Player player = event.getPlayer();
+			World world = event.getPlayer().getWorld();
+
+			player.sendMessage("[情報]看板クリックしたよ！");
+			if(lines[0].equalsIgnoreCase("*Teleport*")){
+				if(!lines[2].isEmpty()){
+					String[] lineThreeEx = lines[2].split(",");
+					Location location = new Location(world, Double.parseDouble(lineThreeEx[0]), Double.parseDouble(lineThreeEx[1]), Double.parseDouble(lineThreeEx[2]));
+					player.teleport(location);
+				}
+			}
 		}
+		}
+
 	}
 
 
