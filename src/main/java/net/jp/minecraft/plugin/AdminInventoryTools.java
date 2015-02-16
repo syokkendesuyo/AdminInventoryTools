@@ -76,7 +76,7 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 			}
 			else {
 				Player player = (Player) sender;
-				if(player.hasPermission("skull.give")||player.isOp()){
+				if(player.hasPermission("ait.skull")||player.isOp()){
 					//palyerがskull.giveまたはopであればここを抜ける
 					if(args.length == 0){
 						sender.sendMessage(ChatColor.AQUA + "[情報]/skull <player> でプレイヤーの頭を取得できます。");

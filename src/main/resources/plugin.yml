@@ -10,8 +10,8 @@ commands:
     skull:
         description: Get a player skull.
         usage: /skull <player>
-        permission: skull.give
-        permission-message: You don't have permission (skull.give)
+        permission: ait.skull
+        permission-message: You don't have permission (ait.skull)
 permissions:
     ait.open:
         description: Allow open Admin GUI.
