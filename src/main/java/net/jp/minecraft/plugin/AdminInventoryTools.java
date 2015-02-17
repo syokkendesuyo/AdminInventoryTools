@@ -1,5 +1,6 @@
 package net.jp.minecraft.plugin;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
@@ -22,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 /**
  * よく使うコマンドやアクションをチェスト画面を利用して操作しよう！ってプラグイン
@@ -40,6 +42,14 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		getServer().getPluginManager().registerEvents(this, this);
+
+		try {
+			Metrics metrics = new Metrics(this);
+			metrics.start();
+		} catch (IOException e) {
+			// Failed to submit the stats :-(
+		}
+
 	}
 
 	//コマンドで杖を渡す処理
@@ -184,7 +194,7 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler
-	public void inventoryclick(InventoryClickEvent event){
+	public void onInventoryClickEvent(InventoryClickEvent event){
 		if (event.getInventory().getName().equalsIgnoreCase(" □Admin Menu□ ")){
 			if (event.getRawSlot() < 54 && event.getRawSlot() > -1){
 				Player player = (Player) event.getWhoClicked();

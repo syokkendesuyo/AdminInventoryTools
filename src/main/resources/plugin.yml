@@ -19,7 +19,7 @@ permissions:
     ait.give:
         description: Give a Admin GUI stick.
         default: op
-    skull.give:
+    ait.skull:
         description: Get a player Skull.
         default: op
     ait.gui:
