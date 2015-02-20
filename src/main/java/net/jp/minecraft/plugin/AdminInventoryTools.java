@@ -47,7 +47,7 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
 		} catch (IOException e) {
-			// Failed to submit the stats :-(
+			// ｽﾃｲﾀｽの送信に失敗 :-(
 		}
 
 	}
@@ -87,7 +87,7 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 			else {
 				Player player = (Player) sender;
 				if(player.hasPermission("ait.skull")||player.isOp()){
-					//palyerがskull.giveまたはopであればここを抜ける
+					//palyerがait.skullまたはopであればここを抜ける
 					if(args.length == 0){
 						sender.sendMessage(ChatColor.AQUA + "[情報]/skull <player> でプレイヤーの頭を取得できます。");
 					}
@@ -95,7 +95,7 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 					 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1);
 					 SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
 					 skull.setDurability((short) 3);
-					 skullMeta.setDisplayName(ChatColor.GOLD + args[0] + "の頭");
+					 skullMeta.setDisplayName(ChatColor.GOLD + args[0] + " の頭");
 					 skullMeta.setOwner(args[0]);
 					 skull.setItemMeta(skullMeta);
 
@@ -152,22 +152,29 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 						ItemStack item3 = new ItemStack(Material.COBBLE_WALL);
 						ItemMeta itemmeta3 = item3.getItemMeta();
 						itemmeta3.setDisplayName(ChatColor.GOLD  + "ホワイトリスト変更");
-						itemmeta3.setLore(Arrays.asList(ChatColor.YELLOW + "ホワイトリストをトグルします。", ChatColor.WHITE + "コマンド:", ChatColor.WHITE + "/whitelist on・offと同様です。"));
+						itemmeta3.setLore(Arrays.asList(ChatColor.YELLOW + "ホワイトリストをトグルします。", ChatColor.WHITE + "コマンド:", ChatColor.WHITE + "/whitelist <on/off>と同様です。"));
 						item3.setItemMeta(itemmeta3);
 
 						//インベントリGUI5つ目の設定
-						ItemStack item4 = new ItemStack(Material.SKULL_ITEM);
+						ItemStack item4 = new ItemStack(Material.WATER_BUCKET);
 						ItemMeta itemmeta4 = item4.getItemMeta();
-						itemmeta4.setDisplayName(ChatColor.GOLD  + "自分の頭を取得");
-						itemmeta4.setLore(Arrays.asList(ChatColor.YELLOW + "MobHeadを自分の頭にして取得。"));
+						itemmeta4.setDisplayName(ChatColor.GOLD  + "天候の変更");
+						itemmeta4.setLore(Arrays.asList(ChatColor.YELLOW + "現在地のワールドを取得して天候をトグル。", ChatColor.WHITE + "コマンド:", ChatColor.WHITE + "/toggledownfallと同様です。"));
 						item4.setItemMeta(itemmeta4);
 
 						//インベントリGUI6つ目の設定
-						ItemStack item5 = new ItemStack(Material.APPLE);
+						ItemStack item5 = new ItemStack(Material.SKULL_ITEM);
 						ItemMeta itemmeta5 = item5.getItemMeta();
-						itemmeta5.setDisplayName(ChatColor.GOLD  + "オペレータ権限変更");
-						itemmeta5.setLore(Arrays.asList(ChatColor.YELLOW + "オペレータ権限をトグルします。", ChatColor.WHITE + "ait.openのパーミッションを保有していない場合", ChatColor.WHITE + "この画面を再度開けなくなります。"));
+						itemmeta5.setDisplayName(ChatColor.GOLD  + "自分の頭を取得");
+						itemmeta5.setLore(Arrays.asList(ChatColor.YELLOW + "MobHeadを自分の頭にして取得。", ChatColor.WHITE + "コマンド:", ChatColor.WHITE + "/skull <PlayerID>と同様です。"));
 						item5.setItemMeta(itemmeta5);
+
+						//インベントリGUI6つ目の設定
+						ItemStack item6 = new ItemStack(Material.APPLE);
+						ItemMeta itemmeta6 = item6.getItemMeta();
+						itemmeta6.setDisplayName(ChatColor.GOLD  + "オペレータ権限変更");
+						itemmeta6.setLore(Arrays.asList(ChatColor.YELLOW + "オペレータ権限をトグルします。", ChatColor.WHITE + "ait.openのパーミッションを保有していない場合", ChatColor.WHITE + "この画面を再度開けなくなります。"));
+						item6.setItemMeta(itemmeta6);
 
 						//インベントリを閉じるだけの操作
 						ItemStack close = new ItemStack(Material.STICK);
@@ -183,6 +190,8 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 						inv.setItem(2, item2);
 						inv.setItem(3, item3);
 						inv.setItem(4, item4);
+						inv.setItem(5, item5);
+						inv.setItem(6, item6);
 						inv.setItem(8, close);
 
 						//インベントリを開ける
@@ -250,11 +259,25 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 					}
 
 					if(event.getRawSlot()==4){
+						if(player.hasPermission("ait.gui.weather")){
+							if(world.hasStorm()==true){
+								world.setStorm(false);
+								player.sendMessage(ChatColor.AQUA + "[情報]" + world.getName() + "を晴にしました。");
+							}
+							else if(world.hasStorm()==false){
+								world.setStorm(true);
+								player.sendMessage(ChatColor.AQUA + "[情報]" + world.getName() + "を雨にしました。");
+							}
+							player.closeInventory();
+						}
+					}
+
+					if(event.getRawSlot()==5){
 						if(player.hasPermission("ait.gui.skull")){
 							 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1);
 							 SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
 							 skull.setDurability((short) 3);
-							 skullMeta.setDisplayName(ChatColor.GOLD + player.getName() + "の頭");
+							 skullMeta.setDisplayName(ChatColor.GOLD + player.getName() + " の頭");
 							 skullMeta.setOwner(player.getName());
 							 skull.setItemMeta(skullMeta);
 
@@ -262,10 +285,13 @@ public class AdminInventoryTools extends JavaPlugin implements Listener {
 							 player.getInventory().addItem(skull);
 
 							 player.closeInventory();
+
+
+							 player.sendMessage(ChatColor.AQUA + "[情報]" + player.getName() + "の頭を与えました。");
 						}
 					}
 
-					if(event.getRawSlot()==5){
+					if(event.getRawSlot()==6){
 						if(player.hasPermission("ait.gui.op")){
 							if(player.isOp()==true){
 								player.sendMessage(ChatColor.AQUA + "[情報]オペレータ権限を剥奪しました。");
